@@ -406,7 +406,7 @@ exports[`Storyshots Note with linked heading 1`] = `
         >
           <p>
             <a
-              data-css-1f737qx=""
+              className="psds-link psds-link--theme--dark psds-link--appearance-subtle"
               href="#"
             >
               Bob Ross
@@ -1768,7 +1768,7 @@ exports[`Storyshots Note/metadata as a link 1`] = `
             data-css-1plyjau=""
           >
             <a
-              data-css-1o01808=""
+              className="psds-link psds-link--theme--dark psds-link--appearance-default"
               href="#"
             >
               i'm a link
@@ -1784,7 +1784,7 @@ exports[`Storyshots Note/metadata as a link 1`] = `
             data-css-1plyjau=""
           >
             <a
-              data-css-1f737qx=""
+              className="psds-link psds-link--theme--dark psds-link--appearance-subtle"
               href="#"
             >
               i'm a subtle link
