@@ -197,31 +197,48 @@ export const Sizes: Story = () => (
 )
 
 export const ItemWithChildNodes: Story = () => (
-  <Container>
-    <Carousel uniqueId={uniqueId} size={Carousel.sizes.wide}>
-      {new Array(9).fill(null).map((_, index) => (
-        <Carousel.Item key={index}>
-          <MockItem />
-        </Carousel.Item>
-      ))}
-    </Carousel>
-  </Container>
-)
-
-export const ItemsRenderProps: Story = () => (
-  <Container>
-    <Carousel uniqueId={uniqueId} size={Carousel.sizes.wide}>
-      {new Array(9).fill(null).map((_, index) => (
-        <Carousel.Item key={index}>
-          {(data: React.ComponentProps<typeof Item>) => (
-            <MockItem>
-              <pre>{JSON.stringify(data, null, 2)}</pre>
-            </MockItem>
-          )}
-        </Carousel.Item>
-      ))}
-    </Carousel>
-  </Container>
+  <div>
+    {/*<Container>*/}
+    {/*  <Header>Mock items</Header>*/}
+    {/*  <Carousel uniqueId={uniqueId} size={Carousel.sizes.wide}>*/}
+    {/*    {new Array(9).fill(null).map((_, index) => (*/}
+    {/*      <Carousel.Item key={index}>*/}
+    {/*        <MockItem />*/}
+    {/*      </Carousel.Item>*/}
+    {/*    ))}*/}
+    {/*  </Carousel>*/}
+    {/*</Container>*/}
+    <Container>
+      <Header>Wide Carousel Cards</Header>
+      <Carousel uniqueId={uniqueId} size={Carousel.sizes.wide}>
+        {new Array(9).fill(null).map((_, index) => (
+          <Carousel.Item key={index}>
+            <MockCard titleText={"Title: " + index} />
+          </Carousel.Item>
+        ))}
+      </Carousel>
+    </Container>
+    {/*<Container>*/}
+    {/*  <Header>Wide Carousel Large Cards</Header>*/}
+    {/*  <Carousel uniqueId={uniqueId} size={Carousel.sizes.wide}>*/}
+    {/*    {new Array(9).fill(null).map((_, index) => (*/}
+    {/*      <Carousel.Item key={index}>*/}
+    {/*        <MockCard titleText={"Title: " + index} size={Card.sizes.large} />*/}
+    {/*      </Carousel.Item>*/}
+    {/*    ))}*/}
+    {/*  </Carousel>*/}
+    {/*</Container>*/}
+    {/*<Container>*/}
+    {/*  <Header>Narrow Carousel Cards</Header>*/}
+    {/*  <Carousel uniqueId={uniqueId} size={Carousel.sizes.narrow}>*/}
+    {/*    {new Array(9).fill(null).map((_, index) => (*/}
+    {/*      <Carousel.Item key={index}>*/}
+    {/*        <MockCard titleText={"Title: " + index} />*/}
+    {/*      </Carousel.Item>*/}
+    {/*    ))}*/}
+    {/*  </Carousel>*/}
+    {/*</Container>*/}
+  </div>
 )
 
 export const SizesWithCards: Story = () => (

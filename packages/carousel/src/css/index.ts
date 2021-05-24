@@ -6,7 +6,7 @@ import {
 } from '@pluralsight/ps-design-system-core'
 import { names as themeNames } from '@pluralsight/ps-design-system-theme'
 
-import { controlDirections as directions } from '../vars/index'
+import * as vars from '../vars/index'
 
 const resetButton = {
   background: 'transparent',
@@ -45,10 +45,8 @@ const resetList = {
 
 export default {
   '.psds-carousel': {
-    position: 'relative',
-    opacity: 0
+    position: 'relative'
   },
-  '.psds-carousel--ready': { opacity: 1 },
 
   '.psds-carousel__controls__control': {
     zIndex: 1,
@@ -56,13 +54,13 @@ export default {
     top: '50%',
     transition: `transform ${motion.speedFast} ease-in-out`
   },
-  [`.psds-carousel__controls__control--${directions.prev}`]: {
+  [`.psds-carousel__controls__control--${vars.controlDirections.prev}`]: {
     left: 0,
     transform: 'translate(-50%, -50%)',
 
     '&[hidden]': { transform: 'translate(-50%, -50%) scale(0)' }
   },
-  [`.psds-carousel__controls__control--${directions.next}`]: {
+  [`.psds-carousel__controls__control--${vars.controlDirections.next}`]: {
     right: 0,
     transform: 'translate(50%, -50%)',
 
@@ -94,39 +92,40 @@ export default {
     '&:hover, &:focus, &:active': { background: 'black' }
   },
 
-  '.psds-carousel__pages': {
-    ...resetFocus,
+  '.psds-carousel__stage': {
+    position: 'relative',
     display: 'flex',
     width: '100%',
+    outline: '2px solid yellow',
     overflow: 'hidden'
   },
-
-  '.psds-carousel__page': {
+  '.psds-carousel__items': {
+    ...resetFocus,
     ...resetList,
-    alignItems: 'flex-start',
+    position: 'relative',
     display: 'flex',
-    flex: '1 0 100%',
-    margin: `0 calc(${layout.spacingSmall}/2)`,
-    pointerEvents: 'none',
-    transition: `transform ${motion.speedXSlow} ease-in-out`,
-
-    '&:first-child': { marginLeft: 0 },
-    '&:last-child': { marginRight: 0 }
   },
-
-  '.psds-carousel__page--active': { pointerEvents: 'auto' },
 
   '.psds-carousel__item': {
-    margin: `0 calc(${layout.spacingSmall}/2)`,
-    flex: '1 1 100%',
-    width: 0,
-    minWidth: 0,
+    margin: `0 8px`,
+    flexGrow: 0,
+    flexShrink: 0,
 
     '&:first-child': { marginLeft: 0 },
-    '&:last-child': { marginRight: 0 }
+    '&:last-child': { marginRight: 0 },
+
+    '&:focus-within': {
+      outline: '3px solid yellow'
+    }
   },
 
-  '.psds-carousel__instructions': {
-    ...accessibility.screenReaderOnly
+  // TODO: rm
+  [`.psds-carousel__item--${vars.sizes.narrow}`]: {
+    // minWidth: '160px',
+    // maxWidth: '335px'
+  },
+  [`.psds-carousel__item--${vars.sizes.wide}`]: {
+    // minWidth: '240px',
+    // maxWidth: '495px'
   }
 }
