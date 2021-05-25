@@ -124,6 +124,7 @@ export default {
     margin: `0 8px`,
     flexGrow: 0,
     flexShrink: 0,
+    scrollSnapAlign: 'start',
 
     '&:first-child': { marginLeft: 0 },
     '&:last-child': { marginRight: 0 },
