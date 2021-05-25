@@ -91,7 +91,8 @@ const Carousel: CarouselComponent = ({
   const handleItemFocus = (index: number) => (_evt: React.FocusEvent) => {
     if (index !== activeIndex) {
       setActiveIndex(index)
-      setTrackStyle(getTrackStyleFor(perPage, itemWidth, numItems, index))
+      if (index >= leftMostVisibleIndex + perPage || index < leftMostVisibleIndex)
+        setTrackStyle(getTrackStyleFor(perPage, itemWidth, numItems, index))
     }
   }
 
@@ -132,7 +133,6 @@ function getTrackOffset(style: React.CSSProperties) {
   return parseInt(style.left, 10)
 }
 
-// TODO: might have an off-by-1 error; on the first off-screen item focus
 function calculateTrackOffsetFor(perPage: number, itemWidth: number, numItems: number, index: number) {
   const isFirstPage = index < perPage
   let left = 0
@@ -152,7 +152,7 @@ function calculateTrackOffsetFor(perPage: number, itemWidth: number, numItems: n
 
 // TODO: add tests for cases
 function calculateLeftMostVisibleIndex(itemWidth: number, trackOffset: number) {
-  return trackOffset / (-1 * (itemWidth + 16))
+  return Math.ceil(trackOffset / (-1 * (itemWidth + 16)))
 }
 
 

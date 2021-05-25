@@ -95,16 +95,21 @@ export default {
   '.psds-carousel__stage': {
     position: 'relative',
     display: 'flex',
-    width: '100%',
+    flexDirection: 'column',
+    flexDirection: 'column',
     overflow: 'hidden',
     scrollSnapType: 'x mandatory',
-    overscrollBehaviorX: 'contain'
+    overscrollBehaviorX: 'contain',
+    scrollPadding: '0',
+    scrollbarWidth: 'none'
   },
   '.psds-carousel__track': {
     ...resetFocus,
     ...resetList,
     position: 'relative',
     display: 'flex',
+    flexGrow: '1',
+    flexDirection: 'row',
     scrollSnapType: 'x mandatory',
     overscrollBehaviorX: 'contain'
   },
@@ -116,9 +121,5 @@ export default {
 
     '&:first-child': { marginLeft: 0 },
     '&:last-child': { marginRight: 0 },
-
-    '&:focus-within': {
-      outline: '3px solid yellow'
-    }
   },
 }
