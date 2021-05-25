@@ -20,13 +20,10 @@ const glamor = glamorDefault || glamorExports
 const styles = {
   carousel: () =>
     glamor.css(stylesheet['.psds-carousel']),
-  pages: () => glamor.css(stylesheet['.psds-carousel__items']),
+  track: () => glamor.css(stylesheet['.psds-carousel__track']),
   stage: () => glamor.css(stylesheet['.psds-carousel__stage']),
-  item: (size: typeof vars.sizes) =>
-    glamor.compose(
-      glamor.css(stylesheet['.psds-carousel__item']),
-      glamor.css(stylesheet[`.psds-carousel__item--${size}`])
-    )
+  item: () =>
+    glamor.css(stylesheet['.psds-carousel__item']),
 }
 
 interface CarouselProps extends HTMLPropsFor<'div'> {
@@ -55,41 +52,50 @@ const Carousel: CarouselComponent = ({
                                      }) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const {width} = useResizeObserver(ref)
+  const [previousActiveIndex, setPreviousActiveIndex] = React.useState<number>(-1)
+  const [activeIndex, setActiveIndex] = React.useState<number>(0)
+  const [trackStyle, setTrackStyle] = React.useState<object>({left: 0})
 
   controlPrev = controlPrev || <Control direction={Control.directions.prev}/>
   controlNext = controlNext || <Control direction={Control.directions.next}/>
   size = size || Carousel.sizes.narrow
 
-  const stageRef = React.createRef()
-  const itemsRef = React.createRef()
+  const stageRef = React.createRef<HTMLDivElement>()
+  const trackRef = React.createRef<HTMLUListElement>()
 
-  const handleItemsKeyUp = (evt: React.KeyboardEvent) => {
-    // const stageX = stageRef.current?.getBoundingClientRect().x
-    // const itemsX = itemsRef.current?.getBoundingClientRect().x
-    // const itemWidth = calcItemWidth(width, size)
-    //
-    // const items = Array.prototype.slice.call(itemsRef.current?.children)
-    //
-    // items.forEach(item => {
-    //   // TODO: canUseDOM
-    //   if (item.contains(document.activeElement)) {
-    //     const offsetFromParent = item.getBoundingClientRect().x - stageX
-    //
-    //     // stageRef.current?.style.left = `${stageX - offsetFromParent}px`
-    //     console.log('focused li, off from parent', offsetFromParent)
-    //   }
-    // })
+  const context = {
+    activeIndex,
+    previousActiveIndex,
+    setActiveIndex,
+    setPreviousActiveIndex,
+    setTrackStyle,
+    size,
+    stageRef,
+    trackRef,
+    trackStyle,
+    width
+  }
 
-    // console.log('up', stageX - itemsX)
+  const perPage = calcItemsPerPage(size, width)
+  const itemWidth = calcItemWidth(size, width)
+  const numItems = React.Children.count(children)
+  const handleItemFocus = (index: number) => (_evt: React.FocusEvent) => {
+    if (index !== activeIndex) {
+      setPreviousActiveIndex(activeIndex)
+      setActiveIndex(index)
+      setTrackStyle(getTrackStyleFor(perPage, itemWidth, numItems, index))
+    }
   }
 
   // TODO: re-add swiping; then add snapping
   return (
-    <CarouselContext.Provider value={{size, width}}>
+    <CarouselContext.Provider value={context}>
       <div {...styles.carousel()} {...rest} ref={ref}>
         {controlPrev}
         <div {...styles.stage()} ref={stageRef}>
-          <Items onKeyUp={handleItemsKeyUp} ref={itemsRef}>{children}</Items>
+          <Track style={trackStyle} ref={trackRef}>{React.Children.map(children, (child, index) =>
+            React.cloneElement(child, {index, onFocus: handleItemFocus(index)})
+          )}</Track>
         </div>
         {controlNext}
       </div>
@@ -101,38 +107,54 @@ Carousel.Control = Control
 Carousel.sizes = vars.sizes
 
 interface ItemProps extends HTMLPropsFor<'li'> {
+  index: number
 }
 
 export const Item: React.FC<ItemProps> = props => {
   const ref = React.createRef<HTMLLIElement>()
   const context = React.useContext(CarouselContext)
+  // TODO: itemWidth in context
   const style = {flexBasis: calcItemWidth(context.size, context.width) + 'px'}
-  const handleFocus = (evt: React.FocusEvent) => {
-    /*
-      setActiveElement(el: DOMElement): void
-      isActiveElement(el: DOMElement): boolean
-      isItemVisible(el: DOMElement): boolean
-      isShiftTabbing(el: DOMElement): boolean
-      isTabbing(el: DOMElement): boolean
-      styleTrackForListItemStageLeft(el: DOMElement): void
-      styleTrackForListItemStageRight(el: DOMElement): void
-     */
-    // known active element
-    // if this is not active element
-    //  set active element to this
-    // ensure active element is visible
-    // if last active element X is > this.X, then shift-tabbing
-    //   set track.left such that this.X is equal to stage.X
-    // if last active element X is < this.X, then tabbing
-    //   set track.left such that this.X is equal to stage.X + (perPage - 1 * itemWidth)
-    console.log('item focus self', evt.target)
-  }
   return (
-    <li onFocus={handleFocus} {...styles.item(context.size)} {...props} style={style}></li>
+    <li {...styles.item()} {...props} style={style}></li>
   )
 }
 Item.displayName = 'Carousel.Item'
 Carousel.Item = Item
+
+// TODO: perPage in context
+function getTrackStyleFor(perPage: number, itemWidth: number, numItems: number, index: number) {
+  const isFirstPage = index < perPage
+  let style = {left: 0}
+  if (!isFirstPage) {
+    const lastPageStartIndex = numItems - perPage
+    const isLastPage = index >= lastPageStartIndex
+    if (isLastPage) {
+      style = {left: (-1 * lastPageStartIndex * (itemWidth + 16)) + 'px'}
+    } else {
+      style = {left: (-1 * index * (itemWidth + 16)) + 'px'}
+    }
+  }
+  return style
+}
+
+// function itemIsOffscreen(context: CarouselContext, index: number) {
+//   // console.log('testing offscreen', context.stageRef)
+//   if (!context.stageRef.current) return false
+//
+//   const stageElement = context.stageRef.current
+//   const itemElements =
+//     context.trackRef.current?.children ?
+//     Array.prototype.slice.call(context.trackRef.current.children)
+//     : []
+//
+//   const stageRect = stageElement.getBoundingClientRect()
+//   const itemRect = itemElements[index].getBoundingClientRect()
+//   const isOffscreenLeft = stageRect.x > itemRect.x
+//   const isOffscreenRight = stageRect.x + stageRect.width < itemRect.x
+//   console.log({ stageX: stageRect.x, itemX: itemRect.x, stageWidth: stageRect.width, isOffscreenLeft, isOffscreenRight })
+//   return isOffscreenLeft || isOffscreenRight
+// }
 
 interface ItemsProps
   extends HTMLPropsFor<'ul'>,
@@ -142,15 +164,15 @@ interface ItemsProps
 interface ItemsComponent extends RefForwardingComponent<ItemsProps, HTMLDivElement, {}> {
 }
 
-const Items = React.forwardRef<HTMLUListElement, ItemsProps>((props, forwardedRef) => {
+const Track = React.forwardRef<HTMLUListElement, ItemsProps>((props, forwardedRef) => {
   const {onSwipeLeft, onSwipeRight, ...rest} = props
-  // const context = React.useContext(CarouselContext)
+  const context = React.useContext(CarouselContext)
 
   useSwipe(forwardedRef as React.MutableRefObject<HTMLUListElement>, {
     onSwipeLeft: onSwipeLeft,
     onSwipeRight: onSwipeRight
   })
 
-  return <ul ref={forwardedRef} {...styles.pages()} {...rest} />
+  return <ul {...rest} ref={forwardedRef} {...styles.track()} />
 }) as ItemsComponent
-Items.displayName = 'Carousel.Items'
+Track.displayName = 'Carousel.Track'

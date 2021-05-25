@@ -36,7 +36,6 @@ export function calcItemWidth(itemSize: typeof vars.sizes, containerWidth: numbe
   const numMid = perPage - 2 > 0 ? perPage - 2 : 0
   const numEnd = perPage > 1 ? perPage - numMid : 0
   const itemWidth = (containerWidth / perPage) - ((numMid * 16 + numEnd * 8) / perPage)
-  console.log('calc item width', {perPage, numMid, numEnd, containerWidth, itemWidth})
   return itemWidth
 }
 

@@ -96,14 +96,17 @@ export default {
     position: 'relative',
     display: 'flex',
     width: '100%',
-    outline: '2px solid yellow',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    scrollSnapType: 'x mandatory',
+    overscrollBehaviorX: 'contain'
   },
-  '.psds-carousel__items': {
+  '.psds-carousel__track': {
     ...resetFocus,
     ...resetList,
     position: 'relative',
     display: 'flex',
+    scrollSnapType: 'x mandatory',
+    overscrollBehaviorX: 'contain'
   },
 
   '.psds-carousel__item': {
@@ -118,14 +121,4 @@ export default {
       outline: '3px solid yellow'
     }
   },
-
-  // TODO: rm
-  [`.psds-carousel__item--${vars.sizes.narrow}`]: {
-    // minWidth: '160px',
-    // maxWidth: '335px'
-  },
-  [`.psds-carousel__item--${vars.sizes.wide}`]: {
-    // minWidth: '240px',
-    // maxWidth: '495px'
-  }
 }
