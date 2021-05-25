@@ -3,6 +3,8 @@ import React from 'react'
 import * as vars from '../vars/index'
 
 interface CarouselContextValue {
+  next: () => void
+  prev: () => void
   activeIndex: number
   itemElements: HTMLLIElement[]
   previousActiveIndex: number
@@ -16,6 +18,8 @@ interface CarouselContextValue {
   width: number
 }
 const context = React.createContext<CarouselContextValue>({
+  next: () => {},
+  prev: () => {},
   size: vars.sizes.narrow
 })
 

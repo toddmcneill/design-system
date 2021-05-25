@@ -53,24 +53,22 @@ export const Control: ControlComponent = props => {
   const themeName = useTheme()
 
   const {
-    activePage = 0,
-    pageCount = 0,
+    activeIndex,
+    numItems,
+    perPage,
     next,
     prev,
-    setTransitioning
   } = context
 
   const isPrev = direction === Control.directions.prev
-  const visible = isPrev ? activePage > 0 : activePage !== pageCount - 1
+  const visible = true // TODO: impl isPrev ? activeIndex >= perPage : activePage !== pageCount - 1
 
   const IconCaret = isPrev ? CaretLeftIcon : CaretRightIcon
-  const handleClick = combineFns(isPrev ? prev : next, onClick, () =>
-    setTransitioning(true)
-  )
-  const scr = `get ${isPrev ? 'previous' : 'next'} carousel page`
+  const handleClick = combineFns(isPrev ? prev : next, onClick)
 
   return (
     <div
+      aria-hidden={true}
       data-testid="carousel control"
       {...styles.control(props.direction)}
       {...(!visible && { hidden: true })}
@@ -79,7 +77,6 @@ export const Control: ControlComponent = props => {
         <button
           {...rest}
           onClick={handleClick}
-          aria-label={scr}
           {...styles.controlButton(themeName)}
           {...(!visible && { tabIndex: -1 })}
         >

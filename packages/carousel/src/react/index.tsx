@@ -62,9 +62,22 @@ const Carousel: CarouselComponent = ({
 
   const stageRef = React.createRef<HTMLDivElement>()
   const trackRef = React.createRef<HTMLUListElement>()
+  const perPage = calcItemsPerPage(size, width)
+  const itemWidth = calcItemWidth(size, width)
+  const numItems = React.Children.count(children)
+
+  const next = () => {
+    setTrackStyle(getTrackStyleFor(perPage, itemWidth, numItems, activeIndex + perPage))
+  }
+
+  const prev = () => {
+    setTrackStyle(getTrackStyleFor(perPage, itemWidth, numItems, activeIndex - perPage))
+  }
 
   const context = {
     activeIndex,
+    next,
+    prev,
     previousActiveIndex,
     setActiveIndex,
     setPreviousActiveIndex,
@@ -76,9 +89,6 @@ const Carousel: CarouselComponent = ({
     width
   }
 
-  const perPage = calcItemsPerPage(size, width)
-  const itemWidth = calcItemWidth(size, width)
-  const numItems = React.Children.count(children)
   const handleItemFocus = (index: number) => (_evt: React.FocusEvent) => {
     if (index !== activeIndex) {
       setPreviousActiveIndex(activeIndex)
@@ -176,3 +186,4 @@ const Track = React.forwardRef<HTMLUListElement, ItemsProps>((props, forwardedRe
   return <ul {...rest} ref={forwardedRef} {...styles.track()} />
 }) as ItemsComponent
 Track.displayName = 'Carousel.Track'
+
