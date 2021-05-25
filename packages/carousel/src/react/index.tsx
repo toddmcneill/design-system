@@ -31,7 +31,6 @@ interface CarouselProps extends HTMLPropsFor<'div'> {
   controlPrev?: React.ReactNode
   controlNext?: React.ReactNode
   size?: ValueOf<typeof vars.sizes>
-  uniqueId?: (prefix: string) => string
 }
 
 interface CarouselStatics {
@@ -52,7 +51,6 @@ const Carousel: CarouselComponent = ({
                                      }) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const {width} = useResizeObserver(ref)
-  const [previousActiveIndex, setPreviousActiveIndex] = React.useState<number>(-1)
   const [activeIndex, setActiveIndex] = React.useState<number>(0)
   const [trackStyle, setTrackStyle] = React.useState<object>({left: 0})
 
@@ -60,38 +58,38 @@ const Carousel: CarouselComponent = ({
   controlNext = controlNext || <Control direction={Control.directions.next}/>
   size = size || Carousel.sizes.narrow
 
-  const stageRef = React.createRef<HTMLDivElement>()
   const trackRef = React.createRef<HTMLUListElement>()
   const perPage = calcItemsPerPage(size, width)
   const itemWidth = calcItemWidth(size, width)
   const numItems = React.Children.count(children)
+  const currentTrackOffset = getTrackOffset(trackStyle)
+  const leftMostVisibleIndex = calculateLeftMostVisibleIndex(itemWidth, currentTrackOffset)
 
+  // TODO: handle left right arrows, page one item width at a time, don't change activeIndex
+  // TODO: test this with 3+ pages, from the middle of a range. Might need to adjust to move the track perPage * itemWidth from current trackOffset instead of calc by index
+  // TODO: fix, page of 3, doesn't get to last page
   const next = () => {
-    setTrackStyle(getTrackStyleFor(perPage, itemWidth, numItems, activeIndex + perPage))
+    setTrackStyle(getTrackStyleFor(perPage, itemWidth, numItems, leftMostVisibleIndex + perPage))
   }
 
   const prev = () => {
-    setTrackStyle(getTrackStyleFor(perPage, itemWidth, numItems, activeIndex - perPage))
+    setTrackStyle(getTrackStyleFor(perPage, itemWidth, numItems, leftMostVisibleIndex - perPage))
   }
 
+  const isPrevVisible = leftMostVisibleIndex > 0
+  const isNextVisible = leftMostVisibleIndex < numItems - perPage
+  console.log({leftMostVisibleIndex, currentTrackOffset, activeIndex, itemWidth})
+
   const context = {
-    activeIndex,
     next,
     prev,
-    previousActiveIndex,
-    setActiveIndex,
-    setPreviousActiveIndex,
-    setTrackStyle,
-    size,
-    stageRef,
-    trackRef,
-    trackStyle,
-    width
+    isNextVisible,
+    isPrevVisible,
+    itemWidth: calcItemWidth(size, width)
   }
 
   const handleItemFocus = (index: number) => (_evt: React.FocusEvent) => {
     if (index !== activeIndex) {
-      setPreviousActiveIndex(activeIndex)
       setActiveIndex(index)
       setTrackStyle(getTrackStyleFor(perPage, itemWidth, numItems, index))
     }
@@ -102,7 +100,7 @@ const Carousel: CarouselComponent = ({
     <CarouselContext.Provider value={context}>
       <div {...styles.carousel()} {...rest} ref={ref}>
         {controlPrev}
-        <div {...styles.stage()} ref={stageRef}>
+        <div {...styles.stage()}>
           <Track style={trackStyle} ref={trackRef}>{React.Children.map(children, (child, index) =>
             React.cloneElement(child, {index, onFocus: handleItemFocus(index)})
           )}</Track>
@@ -121,10 +119,8 @@ interface ItemProps extends HTMLPropsFor<'li'> {
 }
 
 export const Item: React.FC<ItemProps> = props => {
-  const ref = React.createRef<HTMLLIElement>()
   const context = React.useContext(CarouselContext)
-  // TODO: itemWidth in context
-  const style = {flexBasis: calcItemWidth(context.size, context.width) + 'px'}
+  const style = {flexBasis: context.itemWidth + 'px'}
   return (
     <li {...styles.item()} {...props} style={style}></li>
   )
@@ -132,39 +128,37 @@ export const Item: React.FC<ItemProps> = props => {
 Item.displayName = 'Carousel.Item'
 Carousel.Item = Item
 
-// TODO: perPage in context
-function getTrackStyleFor(perPage: number, itemWidth: number, numItems: number, index: number) {
+function getTrackOffset(style: React.CSSProperties) {
+  return parseInt(style.left, 10)
+}
+
+// TODO: might have an off-by-1 error; on the first off-screen item focus
+function calculateTrackOffsetFor(perPage: number, itemWidth: number, numItems: number, index: number) {
   const isFirstPage = index < perPage
-  let style = {left: 0}
+  let left = 0
   if (!isFirstPage) {
     const lastPageStartIndex = numItems - perPage
     const isLastPage = index >= lastPageStartIndex
+    console.log({isLastPage, index, lastPageStartIndex})
     if (isLastPage) {
-      style = {left: (-1 * lastPageStartIndex * (itemWidth + 16)) + 'px'}
+      // TODO: gutter constants
+      left = (-1 * lastPageStartIndex * (itemWidth + 16))
     } else {
-      style = {left: (-1 * index * (itemWidth + 16)) + 'px'}
+      left = (-1 * index * (itemWidth + 16))
     }
   }
-  return style
+  return left
 }
 
-// function itemIsOffscreen(context: CarouselContext, index: number) {
-//   // console.log('testing offscreen', context.stageRef)
-//   if (!context.stageRef.current) return false
-//
-//   const stageElement = context.stageRef.current
-//   const itemElements =
-//     context.trackRef.current?.children ?
-//     Array.prototype.slice.call(context.trackRef.current.children)
-//     : []
-//
-//   const stageRect = stageElement.getBoundingClientRect()
-//   const itemRect = itemElements[index].getBoundingClientRect()
-//   const isOffscreenLeft = stageRect.x > itemRect.x
-//   const isOffscreenRight = stageRect.x + stageRect.width < itemRect.x
-//   console.log({ stageX: stageRect.x, itemX: itemRect.x, stageWidth: stageRect.width, isOffscreenLeft, isOffscreenRight })
-//   return isOffscreenLeft || isOffscreenRight
-// }
+// TODO: add tests for cases
+function calculateLeftMostVisibleIndex(itemWidth: number, trackOffset: number) {
+  return trackOffset / (-1 * (itemWidth + 16))
+}
+
+
+function getTrackStyleFor(perPage: number, itemWidth: number, numItems: number, index: number) {
+  return {left: calculateTrackOffsetFor(perPage, itemWidth, numItems, index) + 'px'}
+}
 
 interface ItemsProps
   extends HTMLPropsFor<'ul'>,
@@ -176,7 +170,6 @@ interface ItemsComponent extends RefForwardingComponent<ItemsProps, HTMLDivEleme
 
 const Track = React.forwardRef<HTMLUListElement, ItemsProps>((props, forwardedRef) => {
   const {onSwipeLeft, onSwipeRight, ...rest} = props
-  const context = React.useContext(CarouselContext)
 
   useSwipe(forwardedRef as React.MutableRefObject<HTMLUListElement>, {
     onSwipeLeft: onSwipeLeft,
