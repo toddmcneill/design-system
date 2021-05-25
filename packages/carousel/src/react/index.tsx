@@ -70,13 +70,13 @@ const Carousel: CarouselComponent = ({
   const next = () => {
     const offset = calcStageOffsetForPageAt(perPage, itemWidth, numItems, leftMostVisibleIndex + perPage)
     setStageOffset(offset)
-    stageRef.current.scrollLeft = offset
+    stageRef.current.scroll({ left: offset, behavior: 'smooth' })
   }
 
   const prev = () => {
     const offset = calcStageOffsetForPageAt(perPage, itemWidth, numItems, leftMostVisibleIndex - perPage)
     setStageOffset(offset)
-    stageRef.current.scrollLeft = offset
+    stageRef.current.scroll({ left: offset, behavior: 'smooth' })
   }
 
   const isPrevVisible = leftMostVisibleIndex > 0
@@ -99,11 +99,11 @@ const Carousel: CarouselComponent = ({
     if (index >= leftMostVisibleIndex + perPage) {
       const offset = calcStageOffsetForward(perPage, itemWidth, index)
       setStageOffset(offset)
-      stageRef.current.scrollLeft = offset
+      stageRef.current.scroll({ left: offset, behavior: 'smooth' })
     } else if (index < leftMostVisibleIndex) {
       const offset = calcStageOffsetBackward(itemWidth, index)
       setStageOffset(offset)
-      stageRef.current.scrollLeft = offset
+      stageRef.current.scroll({ left: offset, behavior: 'smooth' })
     }
   }
 
@@ -141,12 +141,7 @@ export const Item: React.FC<ItemProps> = props => {
 Item.displayName = 'Carousel.Item'
 Carousel.Item = Item
 
-function getTrackOffset(style: React.CSSProperties) {
-  return parseInt(style.left, 10)
-}
-
-type Direction = 'forward' | 'backward'
-
+// TODO: move to /js
 function calcStageOffsetBackward(itemWidth: number, index: number) {
   return index * (itemWidth + 16)
 }
