@@ -127,6 +127,6 @@ export default {
     scrollSnapAlign: 'start',
 
     '&:first-child': { marginLeft: 0 },
-    '&:last-child': { marginRight: 0 },
-  },
+    '&:last-child': { marginRight: 0 }
+  }
 }

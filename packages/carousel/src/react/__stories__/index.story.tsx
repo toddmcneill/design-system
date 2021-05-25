@@ -43,7 +43,9 @@ const MockCard: React.FC<MockCardProps> = props => {
         />
       ]}
       image={
-        <Card.Image src={`//picsum.photos/680/320?image=${40 + index}&gravity=north`} />
+        <Card.Image
+          src={`//picsum.photos/680/320?image=${40 + index}&gravity=north`}
+        />
       }
       metadata1={[
         <Card.TextLink key="text">
@@ -87,9 +89,7 @@ const MockItem: React.FC<React.HTMLAttributes<HTMLDivElement>> = props => (
 )
 
 const Container: React.FC = props => (
-  <div style={{ margin: '64px'}}>
-    {props.children}
-  </div>
+  <div style={{ margin: '64px' }}>{props.children}</div>
 )
 const Header: React.FC = props => (
   <h2 style={{ paddingTop: '16px' }}>{props.children}</h2>

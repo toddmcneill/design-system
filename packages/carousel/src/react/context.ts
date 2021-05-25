@@ -11,7 +11,7 @@ interface CarouselContextValue {
 }
 const context = React.createContext<CarouselContextValue>({
   next: () => {},
-  prev: () => {},
+  prev: () => {}
 })
 
 export default context
