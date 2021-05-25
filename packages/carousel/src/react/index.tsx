@@ -10,9 +10,16 @@ import React from 'react'
 import CarouselContext from './context'
 import {Control} from './control'
 import stylesheet from '../css/index'
+import {
+  calcItemWidth,
+  calcItemsPerPage,
+  calcStageOffsetBackward,
+  calcStageOffsetForPageAt,
+  calcStageOffsetForward,
+  calculateLeftMostVisibleIndex
+} from "../js";
 import useSwipe, {UseSwipeOpts} from './use-swipe'
 import * as vars from '../vars/index'
-import {calcItemWidth, calcItemsPerPage} from "../js";
 
 const glamor = glamorDefault || glamorExports
 
@@ -90,22 +97,20 @@ const Carousel: CarouselComponent = ({
   const handleItemFocus = (index: number) => (_evt: React.FocusEvent) => {
     if (index !== activeIndex) {
       setActiveIndex(index)
+      if (index >= leftMostVisibleIndex + perPage) {
+        const offset = calcStageOffsetForward(perPage, itemWidth, index)
+        setStageOffset(offset)
+        stageRef.current.scroll({ left: offset, behavior: 'smooth' })
+      } else if (index < leftMostVisibleIndex) {
+        const offset = calcStageOffsetBackward(itemWidth, index)
+        setStageOffset(offset)
+        stageRef.current.scroll({ left: offset, behavior: 'smooth' })
+      }
     }
 
-    // TODO: put in iff?
-    if (index >= leftMostVisibleIndex + perPage) {
-      const offset = calcStageOffsetForward(perPage, itemWidth, index)
-      setStageOffset(offset)
-      stageRef.current.scroll({ left: offset, behavior: 'smooth' })
-    } else if (index < leftMostVisibleIndex) {
-      const offset = calcStageOffsetBackward(itemWidth, index)
-      setStageOffset(offset)
-      stageRef.current.scroll({ left: offset, behavior: 'smooth' })
-    }
   }
 
   // TODO: re-add swiping; then add snapping
-  // TODO: rm stage id
   return (
     <CarouselContext.Provider value={context}>
       <div {...styles.carousel()} {...rest} ref={ref}>
@@ -138,24 +143,6 @@ export const Item: React.FC<ItemProps> = props => {
 Item.displayName = 'Carousel.Item'
 Carousel.Item = Item
 
-// TODO: move to /js
-function calcStageOffsetBackward(itemWidth: number, index: number) {
-  return index * (itemWidth + 16)
-}
-
-function calcStageOffsetForward(perPage: number, itemWidth: number, index: number) {
-  return (index - perPage + 1) * (itemWidth + 16)
-}
-
-function calcStageOffsetForPageAt(itemWidth: number, index: number) {
-  return calcStageOffsetBackward(itemWidth, index)
-}
-
-// TODO: add tests for cases
-function calculateLeftMostVisibleIndex(itemWidth: number, stageOffset: number) {
-  return Math.ceil(stageOffset / (itemWidth + 16))
-}
-
 interface TrackProps
   extends HTMLPropsFor<'ul'>,
     Required<Pick<UseSwipeOpts, 'onSwipeLeft' | 'onSwipeRight'>> {
@@ -169,7 +156,6 @@ const Track: React.FC<TrackProps> = props => {
     onSwipeRight: onSwipeRight
   })
 
-  // TODO: rm id
   return <ul {...rest} ref={ref} {...styles.track()} />
 }
 Track.displayName = 'Carousel.Track'

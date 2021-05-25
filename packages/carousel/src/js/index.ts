@@ -39,6 +39,22 @@ export function calcItemWidth(itemSize: typeof vars.sizes, containerWidth: numbe
   return itemWidth
 }
 
+export function calcStageOffsetBackward(itemWidth: number, index: number) {
+  return index * (itemWidth + 16)
+}
+
+export function calcStageOffsetForward(perPage: number, itemWidth: number, index: number) {
+  return (index - perPage + 1) * (itemWidth + 16)
+}
+
+export function calcStageOffsetForPageAt(itemWidth: number, index: number) {
+  return calcStageOffsetBackward(itemWidth, index)
+}
+
+export function calculateLeftMostVisibleIndex(itemWidth: number, stageOffset: number) {
+  return Math.ceil(stageOffset / (itemWidth + 16))
+}
+
 export const isLeftArrow = (evt: React.KeyboardEvent) => evt.keyCode === 37
 
 export const isRightArrow = (evt: React.KeyboardEvent) => evt.keyCode === 39
