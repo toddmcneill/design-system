@@ -52,7 +52,7 @@ const Carousel: CarouselComponent = ({
   const ref = React.useRef<HTMLDivElement>(null)
   const {width} = useResizeObserver(ref)
   const [activeIndex, setActiveIndex] = React.useState<number>(0)
-  const [trackStyle, setTrackStyle] = React.useState<object>({left: 0})
+  const [trackStyle, setTrackStyle] = React.useState<object>({left: '0'})
 
   controlPrev = controlPrev || <Control direction={Control.directions.prev}/>
   controlNext = controlNext || <Control direction={Control.directions.next}/>
@@ -69,11 +69,11 @@ const Carousel: CarouselComponent = ({
   // TODO: test this with 3+ pages, from the middle of a range. Might need to adjust to move the track perPage * itemWidth from current trackOffset instead of calc by index
   // TODO: fix, page of 3, doesn't get to last page
   const next = () => {
-    setTrackStyle(getTrackStyleFor(perPage, itemWidth, numItems, leftMostVisibleIndex + perPage))
+    setTrackStyle(getTrackStyleForPageAt(perPage, itemWidth, numItems, leftMostVisibleIndex + perPage))
   }
 
   const prev = () => {
-    setTrackStyle(getTrackStyleFor(perPage, itemWidth, numItems, leftMostVisibleIndex - perPage))
+    setTrackStyle(getTrackStyleForPageAt(perPage, itemWidth, numItems, leftMostVisibleIndex - perPage))
   }
 
   const isPrevVisible = leftMostVisibleIndex > 0
@@ -91,9 +91,16 @@ const Carousel: CarouselComponent = ({
   const handleItemFocus = (index: number) => (_evt: React.FocusEvent) => {
     if (index !== activeIndex) {
       setActiveIndex(index)
-      if (index >= leftMostVisibleIndex + perPage || index < leftMostVisibleIndex)
-        setTrackStyle(getTrackStyleFor(perPage, itemWidth, numItems, index))
+      // if (index >= leftMostVisibleIndex + perPage)
+      //   setTrackStyle({ left: changeTrackOffsetBy(trackStyle, itemWidth, 1) + 'px' })
+      // else if (index < leftMostVisibleIndex)
+      //   setTrackStyle({ left: changeTrackOffsetBy(trackStyle, itemWidth, -1) + 'px' })
+      // setTrackStyle(getTrackStyleForPageAt(perPage, itemWidth, numItems, index))
     }
+    if (index >= leftMostVisibleIndex + perPage)
+      setTrackStyle(getTrackStyleForTabDirection('forward', perPage, itemWidth, numItems, index))
+    else if (index < leftMostVisibleIndex)
+      setTrackStyle(getTrackStyleForTabDirection('backward', perPage, itemWidth, numItems, index))
   }
 
   // TODO: re-add swiping; then add snapping
@@ -133,7 +140,39 @@ function getTrackOffset(style: React.CSSProperties) {
   return parseInt(style.left, 10)
 }
 
-function calculateTrackOffsetFor(perPage: number, itemWidth: number, numItems: number, index: number) {
+// function changeTrackOffsetBy(trackStyle: React.CSSProperties, itemWidth: number, count: number) {
+//   const currentOffset = getTrackOffset(trackStyle)
+//   const diffOffset = count * (itemWidth + 16)
+//   return currentOffset - diffOffset
+// }
+
+type Direction = 'forward' | 'backward'
+function calculateTrackOffsetForTabDirection(direction: Direction, perPage: number, itemWidth: number, numItems: number, index: number) {
+  const isFirstPage = index < perPage
+  let left = 0
+  if (!isFirstPage) {
+    const lastPageStartIndex = numItems - perPage
+    const isLastPage = index >= lastPageStartIndex
+    console.log({isLastPage, index, lastPageStartIndex})
+    if (isLastPage) {
+      // TODO: gutter constants
+      left = (-1 * lastPageStartIndex * (itemWidth + 16))
+    } else {
+      if ('backward' === direction)
+        left = (-1 * index * (itemWidth + 16))
+      else
+        left = (-1 * (perPage - index + 1) * (itemWidth + 16))
+    }
+  }
+  return left
+}
+
+function getTrackStyleForTabDirection(direction: Direction, perPage: number, itemWidth: number, numItems: number, index: number) {
+  return {left: calculateTrackOffsetForTabDirection(direction, perPage, itemWidth, numItems, index) + 'px'}
+}
+
+
+function calculateTrackOffsetForPageAt(perPage: number, itemWidth: number, numItems: number, index: number) {
   const isFirstPage = index < perPage
   let left = 0
   if (!isFirstPage) {
@@ -150,14 +189,14 @@ function calculateTrackOffsetFor(perPage: number, itemWidth: number, numItems: n
   return left
 }
 
-// TODO: add tests for cases
-function calculateLeftMostVisibleIndex(itemWidth: number, trackOffset: number) {
-  return Math.ceil(trackOffset / (-1 * (itemWidth + 16)))
+function getTrackStyleForPageAt(perPage: number, itemWidth: number, numItems: number, index: number) {
+  return {left: calculateTrackOffsetForPageAt(perPage, itemWidth, numItems, index) + 'px'}
 }
 
 
-function getTrackStyleFor(perPage: number, itemWidth: number, numItems: number, index: number) {
-  return {left: calculateTrackOffsetFor(perPage, itemWidth, numItems, index) + 'px'}
+// TODO: add tests for cases
+function calculateLeftMostVisibleIndex(itemWidth: number, trackOffset: number) {
+  return Math.ceil(trackOffset / (-1 * (itemWidth + 16)))
 }
 
 interface ItemsProps
