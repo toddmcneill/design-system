@@ -30,8 +30,8 @@ const MockCard: React.FC<MockCardProps> = props => {
     <Card
       title={
         <Card.TextLink>
-          <a href="#" tabIndex={1}>
-            <Card.Title>Title: {index}</Card.Title>
+          <a href="#">
+            <Card.Title>Title</Card.Title>
           </a>
         </Card.TextLink>
       }

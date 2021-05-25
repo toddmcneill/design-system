@@ -58,6 +58,7 @@ const Carousel: CarouselComponent = ({
   controlNext = controlNext || <Control direction={Control.directions.next}/>
   size = size || Carousel.sizes.narrow
 
+  const stageRef = React.createRef<HTMLDivElement>()
   const trackRef = React.createRef<HTMLUListElement>()
   const perPage = calcItemsPerPage(size, width)
   const itemWidth = calcItemWidth(size, width)
@@ -69,16 +70,20 @@ const Carousel: CarouselComponent = ({
   // TODO: test this with 3+ pages, from the middle of a range. Might need to adjust to move the track perPage * itemWidth from current trackOffset instead of calc by index
   // TODO: fix, page of 3, doesn't get to last page
   const next = () => {
-    setTrackStyle(getTrackStyleForPageAt(perPage, itemWidth, numItems, leftMostVisibleIndex + perPage))
+    const offset = calculateTrackOffsetForPageAt(perPage, itemWidth, numItems, leftMostVisibleIndex + perPage)
+    setTrackStyle({ left: offset + 'px' })
+    stageRef.current.scrollLeft = Math.abs(offset)
   }
 
   const prev = () => {
-    setTrackStyle(getTrackStyleForPageAt(perPage, itemWidth, numItems, leftMostVisibleIndex - perPage))
+    const offset = calculateTrackOffsetForPageAt(perPage, itemWidth, numItems, leftMostVisibleIndex - perPage)
+    setTrackStyle({ left: offset + 'px' })
+    stageRef.current.scrollLeft = Math.abs(offset)
   }
 
   const isPrevVisible = leftMostVisibleIndex > 0
   const isNextVisible = leftMostVisibleIndex < numItems - perPage
-  console.log({leftMostVisibleIndex, currentTrackOffset, activeIndex, itemWidth})
+  // console.log({leftMostVisibleIndex, currentTrackOffset, activeIndex, itemWidth})
 
   const context = {
     next,
@@ -97,19 +102,35 @@ const Carousel: CarouselComponent = ({
       //   setTrackStyle({ left: changeTrackOffsetBy(trackStyle, itemWidth, -1) + 'px' })
       // setTrackStyle(getTrackStyleForPageAt(perPage, itemWidth, numItems, index))
     }
-    if (index >= leftMostVisibleIndex + perPage)
-      setTrackStyle(getTrackStyleForTabDirection('forward', perPage, itemWidth, numItems, index))
-    else if (index < leftMostVisibleIndex)
-      setTrackStyle(getTrackStyleForTabDirection('backward', perPage, itemWidth, numItems, index))
+    // if (index >= leftMostVisibleIndex + perPage)
+    //   setTrackStyle(getTrackStyleForTabDirection('forward', perPage, itemWidth, numItems, index))
+    // else if (index < leftMostVisibleIndex)
+    //   setTrackStyle(getTrackStyleForTabDirection('backward', perPage, itemWidth, numItems, index))
+
+    if (index >= leftMostVisibleIndex + perPage) {
+      const offset = calculateTrackOffsetForTabDirection('forward', perPage, itemWidth, numItems, index)
+      console.log({ offset })
+      stageRef.current.scrollLeft = Math.abs(offset)
+      setTrackStyle({ left: offset + 'px' })
+    }
+    else if (index < leftMostVisibleIndex) {
+      const offset = calculateTrackOffsetForTabDirection('backward', perPage, itemWidth, numItems, index)
+      console.log({ offset })
+      stageRef.current.scrollLeft = Math.abs(offset)
+      setTrackStyle({ left: offset + 'px' })
+    }
+    // const ul = trackRef.current
+    // console.log('focus', ul)
   }
 
   // TODO: re-add swiping; then add snapping
+  // TODO: rm stage id
   return (
     <CarouselContext.Provider value={context}>
       <div {...styles.carousel()} {...rest} ref={ref}>
         {controlPrev}
-        <div {...styles.stage()}>
-          <Track style={trackStyle} ref={trackRef}>{React.Children.map(children, (child, index) =>
+        <div {...styles.stage()} ref={stageRef}>
+          <Track ref={trackRef}>{React.Children.map(children, (child, index) =>
             React.cloneElement(child, {index, onFocus: handleItemFocus(index)})
           )}</Track>
         </div>
@@ -160,8 +181,10 @@ function calculateTrackOffsetForTabDirection(direction: Direction, perPage: numb
     } else {
       if ('backward' === direction)
         left = (-1 * index * (itemWidth + 16))
-      else
-        left = (-1 * (perPage - index + 1) * (itemWidth + 16))
+      else {
+        left = (-1 * (index - perPage + 1) * (itemWidth + 16))
+        console.log('forward', { left, perPage, index, calc: perPage - index + 1, itemWidth })
+      }
     }
   }
   return left
@@ -215,7 +238,8 @@ const Track = React.forwardRef<HTMLUListElement, ItemsProps>((props, forwardedRe
     onSwipeRight: onSwipeRight
   })
 
-  return <ul {...rest} ref={forwardedRef} {...styles.track()} />
+  // TODO: rm id
+  return <ul id="track" {...rest} ref={forwardedRef} {...styles.track()} />
 }) as ItemsComponent
 Track.displayName = 'Carousel.Track'
 

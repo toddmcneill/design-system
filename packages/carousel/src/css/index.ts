@@ -97,11 +97,16 @@ export default {
     display: 'flex',
     flexDirection: 'column',
     flexDirection: 'column',
-    overflow: 'hidden',
+    overflowY: 'hidden',
+    overflowX: 'auto',
     scrollSnapType: 'x mandatory',
     overscrollBehaviorX: 'contain',
     scrollPadding: '0',
     scrollbarWidth: 'none',
+
+    '&::-webkit-scrollbar': {
+      display: 'none'
+    }
   },
   '.psds-carousel__track': {
     ...resetFocus,
@@ -110,8 +115,8 @@ export default {
     display: 'flex',
     flexGrow: '1',
     flexDirection: 'row',
-    scrollSnapType: 'x mandatory',
-    overscrollBehaviorX: 'contain',
+    // scrollSnapType: 'x mandatory',
+    // overscrollBehaviorX: 'contain',
     transition: 'left 400ms'
   },
 
