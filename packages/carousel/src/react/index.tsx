@@ -62,19 +62,16 @@ const Carousel: CarouselComponent = ({
   const itemWidth = calcItemWidth(size, width)
   const numItems = React.Children.count(children)
   const leftMostVisibleIndex = calculateLeftMostVisibleIndex(itemWidth, stageOffset)
-  console.log({ leftMostVisibleIndex, stageOffset, activeIndex })
 
   // TODO: handle left right arrows, page one item width at a time, don't change activeIndex
-  // TODO: test this with 3+ pages, from the middle of a range. Might need to adjust to move the track perPage * itemWidth from current trackOffset instead of calc by index
-  // TODO: fix, page of 3, doesn't get to last page
   const next = () => {
-    const offset = calcStageOffsetForPageAt(perPage, itemWidth, numItems, leftMostVisibleIndex + perPage)
+    const offset = calcStageOffsetForPageAt(itemWidth, leftMostVisibleIndex + perPage)
     setStageOffset(offset)
     stageRef.current.scroll({ left: offset, behavior: 'smooth' })
   }
 
   const prev = () => {
-    const offset = calcStageOffsetForPageAt(perPage, itemWidth, numItems, leftMostVisibleIndex - perPage)
+    const offset = calcStageOffsetForPageAt(itemWidth,leftMostVisibleIndex - perPage)
     setStageOffset(offset)
     stageRef.current.scroll({ left: offset, behavior: 'smooth' })
   }
@@ -150,20 +147,8 @@ function calcStageOffsetForward(perPage: number, itemWidth: number, index: numbe
   return (index - perPage + 1) * (itemWidth + 16)
 }
 
-function calcStageOffsetForPageAt(perPage: number, itemWidth: number, numItems: number, index: number) {
-  const isFirstPage = index < perPage
-  let left = 0
-  if (!isFirstPage) {
-    const lastPageStartIndex = numItems - perPage
-    const isLastPage = index >= lastPageStartIndex
-    if (isLastPage) {
-      // TODO: gutter constants
-      left = lastPageStartIndex * (itemWidth + 16)
-    } else {
-      left = index * (itemWidth + 16)
-    }
-  }
-  return left
+function calcStageOffsetForPageAt(itemWidth: number, index: number) {
+  return calcStageOffsetBackward(itemWidth, index)
 }
 
 // TODO: add tests for cases
