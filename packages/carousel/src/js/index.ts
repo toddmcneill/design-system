@@ -2,14 +2,14 @@ import {sizes} from '../vars/index'
 import * as vars from "../vars";
 
 const cardCountsPerWidth = {
-  // TODO: make narrow values reasonable
   narrow: [
-    {min: 1401, max: 9999, count: 6},
-    {min: 1201, max: 1400, count: 5},
-    {min: 901, max: 1200, count: 4},
-    {min: 701, max: 900, count: 3},
-    {min: 401, max: 700, count: 2},
-    {min: 0, max: 400, count: 1},
+    {min: 1401, max: 9999, count: 8},
+    {min: 1201, max: 1400, count: 7},
+    {min: 901, max: 1200, count: 6},
+    {min: 701, max: 900, count: 5},
+    {min: 401, max: 700, count: 4},
+    {min: 321, max: 400, count: 2},
+    {min: 0, max: 320, count: 1},
   ],
   wide: [
     {min: 1401, max: 9999, count: 6},

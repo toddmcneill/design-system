@@ -87,7 +87,7 @@ const MockItem: React.FC<React.HTMLAttributes<HTMLDivElement>> = props => (
 )
 
 const Container: React.FC = props => (
-  <div style={{ margin: '64px', outline: '1px solid red' }}>
+  <div style={{ margin: '64px'}}>
     {props.children}
   </div>
 )
@@ -182,35 +182,10 @@ export const Controls: Story = () => (
 )
 
 export const Sizes: Story = () => (
-  <Container>
-    {Object.values(Carousel.sizes).map(size => (
-      <div key={size}>
-        <Header>{size}</Header>
-        <Carousel uniqueId={uniqueId} size={size}>
-          {new Array(13).fill(null).map((_, index) => (
-            <MockItem key={index}>item: {index + 1}</MockItem>
-          ))}
-        </Carousel>
-      </div>
-    ))}
-  </Container>
-)
-
-export const ItemWithChildNodes: Story = () => (
   <div>
-    {/*<Container>*/}
-    {/*  <Header>Mock items</Header>*/}
-    {/*  <Carousel uniqueId={uniqueId} size={Carousel.sizes.wide}>*/}
-    {/*    {new Array(9).fill(null).map((_, index) => (*/}
-    {/*      <Carousel.Item key={index}>*/}
-    {/*        <MockItem />*/}
-    {/*      </Carousel.Item>*/}
-    {/*    ))}*/}
-    {/*  </Carousel>*/}
-    {/*</Container>*/}
     <Container>
-      <Header>Wide Carousel Cards</Header>
-      <Carousel uniqueId={uniqueId} size={Carousel.sizes.wide}>
+      <Header>Narrow Carousel Cards</Header>
+      <Carousel size={Carousel.sizes.narrow}>
         {new Array(9).fill(null).map((_, index) => (
           <Carousel.Item key={index}>
             <MockCard index={index} />
@@ -218,44 +193,17 @@ export const ItemWithChildNodes: Story = () => (
         ))}
       </Carousel>
     </Container>
-    {/*<Container>*/}
-    {/*  <Header>Wide Carousel Large Cards</Header>*/}
-    {/*  <Carousel uniqueId={uniqueId} size={Carousel.sizes.wide}>*/}
-    {/*    {new Array(9).fill(null).map((_, index) => (*/}
-    {/*      <Carousel.Item key={index}>*/}
-    {/*        <MockCard index={index} size={Card.sizes.large} />*/}
-    {/*      </Carousel.Item>*/}
-    {/*    ))}*/}
-    {/*  </Carousel>*/}
-    {/*</Container>*/}
-    {/*<Container>*/}
-    {/*  <Header>Narrow Carousel Cards</Header>*/}
-    {/*  <Carousel uniqueId={uniqueId} size={Carousel.sizes.narrow}>*/}
-    {/*    {new Array(9).fill(null).map((_, index) => (*/}
-    {/*      <Carousel.Item key={index}>*/}
-    {/*        <MockCard index={index} />*/}
-    {/*      </Carousel.Item>*/}
-    {/*    ))}*/}
-    {/*  </Carousel>*/}
-    {/*</Container>*/}
+    <Container>
+      <Header>Wide Carousel Cards</Header>
+      <Carousel size={Carousel.sizes.wide}>
+        {new Array(9).fill(null).map((_, index) => (
+          <Carousel.Item key={index}>
+            <MockCard index={index} />
+          </Carousel.Item>
+        ))}
+      </Carousel>
+    </Container>
   </div>
-)
-
-export const SizesWithCards: Story = () => (
-  <Container>
-    {Object.values(Carousel.sizes).map(size => (
-      <div key={size}>
-        <Header>{size}</Header>
-        <Carousel uniqueId={uniqueId} size={size}>
-          <MockCard metadata1={longStringsMetaData} index={0} />
-
-          {new Array(13).fill(null).map((_, index) => (
-            <MockCard key={index} index={index} />
-          ))}
-        </Carousel>
-      </div>
-    ))}
-  </Container>
 )
 
 export const ActionMenuPositionedChild: Story = () => (
