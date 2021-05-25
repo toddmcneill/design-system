@@ -31,7 +31,7 @@ const MockCard: React.FC<MockCardProps> = props => {
       title={
         <Card.TextLink>
           <a href="#">
-            <Card.Title>Title</Card.Title>
+            <Card.Title>{'Title: ' + index}</Card.Title>
           </a>
         </Card.TextLink>
       }
