@@ -101,7 +101,7 @@ export default {
     scrollSnapType: 'x mandatory',
     overscrollBehaviorX: 'contain',
     scrollPadding: '0',
-    scrollbarWidth: 'none'
+    scrollbarWidth: 'none',
   },
   '.psds-carousel__track': {
     ...resetFocus,
@@ -111,7 +111,8 @@ export default {
     flexGrow: '1',
     flexDirection: 'row',
     scrollSnapType: 'x mandatory',
-    overscrollBehaviorX: 'contain'
+    overscrollBehaviorX: 'contain',
+    transition: 'left 400ms'
   },
 
   '.psds-carousel__item': {

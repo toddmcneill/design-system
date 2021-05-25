@@ -22,16 +22,16 @@ interface MockCardProps
     React.ComponentProps<typeof Card>,
     'title' | 'actionBar' | 'image' | 'metadata1'
   > {
-  titleText: string
+  index: number
 }
 const MockCard: React.FC<MockCardProps> = props => {
-  const { titleText, ...rest } = props
+  const { index, ...rest } = props
   return (
     <Card
       title={
         <Card.TextLink>
           <a href="#" tabIndex={1}>
-            <Card.Title>{props.titleText}</Card.Title>
+            <Card.Title>Title: {index}</Card.Title>
           </a>
         </Card.TextLink>
       }
@@ -43,7 +43,7 @@ const MockCard: React.FC<MockCardProps> = props => {
         />
       ]}
       image={
-        <Card.Image src="//picsum.photos/680/320?image=42&gravity=north" />
+        <Card.Image src={`//picsum.photos/680/320?image=${40 + index}&gravity=north`} />
       }
       metadata1={[
         <Card.TextLink key="text">
@@ -213,7 +213,7 @@ export const ItemWithChildNodes: Story = () => (
       <Carousel uniqueId={uniqueId} size={Carousel.sizes.wide}>
         {new Array(9).fill(null).map((_, index) => (
           <Carousel.Item key={index}>
-            <MockCard titleText={"Title: " + index} />
+            <MockCard index={index} />
           </Carousel.Item>
         ))}
       </Carousel>
@@ -223,7 +223,7 @@ export const ItemWithChildNodes: Story = () => (
     {/*  <Carousel uniqueId={uniqueId} size={Carousel.sizes.wide}>*/}
     {/*    {new Array(9).fill(null).map((_, index) => (*/}
     {/*      <Carousel.Item key={index}>*/}
-    {/*        <MockCard titleText={"Title: " + index} size={Card.sizes.large} />*/}
+    {/*        <MockCard index={index} size={Card.sizes.large} />*/}
     {/*      </Carousel.Item>*/}
     {/*    ))}*/}
     {/*  </Carousel>*/}
@@ -233,7 +233,7 @@ export const ItemWithChildNodes: Story = () => (
     {/*  <Carousel uniqueId={uniqueId} size={Carousel.sizes.narrow}>*/}
     {/*    {new Array(9).fill(null).map((_, index) => (*/}
     {/*      <Carousel.Item key={index}>*/}
-    {/*        <MockCard titleText={"Title: " + index} />*/}
+    {/*        <MockCard index={index} />*/}
     {/*      </Carousel.Item>*/}
     {/*    ))}*/}
     {/*  </Carousel>*/}
@@ -247,10 +247,10 @@ export const SizesWithCards: Story = () => (
       <div key={size}>
         <Header>{size}</Header>
         <Carousel uniqueId={uniqueId} size={size}>
-          <MockCard metadata1={longStringsMetaData} titleText="Title Here" />
+          <MockCard metadata1={longStringsMetaData} index={0} />
 
           {new Array(13).fill(null).map((_, index) => (
-            <MockCard key={index} titleText={`Card ${index}`} />
+            <MockCard key={index} index={index} />
           ))}
         </Carousel>
       </div>
@@ -321,7 +321,7 @@ export const ActionMenuInPortal: Story = () => {
                 />
               </BelowRight>
             ]}
-            titleText="Yahoo"
+            index={0}
           />
           {new Array(3).fill(null).map((_, index) => (
             <MockItem key={index} />
