@@ -107,6 +107,12 @@ export default {
       display: 'none'
     }
   },
+  '.psds-carousel__stage--ready': {
+    '& > ul > li': {
+      visibility: 'visible',
+      scrollSnapAlign: 'start',
+    }
+  },
   '.psds-carousel__track': {
     ...resetFocus,
     ...resetList,
@@ -126,8 +132,4 @@ export default {
     '&:first-child': { marginLeft: 0 },
     '&:last-child': { marginRight: 0 }
   },
-  '.psds-carousel__item--ready': {
-    visibility: 'visible',
-    scrollSnapAlign: 'start',
-  }
 }

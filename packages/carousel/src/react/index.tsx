@@ -28,12 +28,12 @@ const glamor = glamorDefault || glamorExports
 const styles = {
   carousel: () => glamor.css(stylesheet['.psds-carousel']),
   track: () => glamor.css(stylesheet['.psds-carousel__track']),
-  stage: () => glamor.css(stylesheet['.psds-carousel__stage']),
-  item: (ready: boolean) =>
+  stage: (ready: boolean) =>
     glamor.compose(
-      glamor.css(stylesheet['.psds-carousel__item']),
-      ready && glamor.css(stylesheet['.psds-carousel__item--ready'])
-    )
+      glamor.css(stylesheet['.psds-carousel__stage']),
+      ready && glamor.css(stylesheet['.psds-carousel__stage--ready'])
+    ),
+  item: () => glamor.css(stylesheet['.psds-carousel__item'])
 }
 
 interface CarouselProps extends HTMLPropsFor<'div'> {
@@ -130,7 +130,7 @@ const Carousel: CarouselComponent = ({
     <CarouselContext.Provider value={context}>
       <div {...styles.carousel()} {...rest} ref={ref}>
         {controlPrev}
-        <div {...styles.stage()} ref={stageRef}>
+        <div {...styles.stage(ready)} ref={stageRef}>
           <Track
             onKeyDown={handleTrackKeyDown}
             onSwipeLeft={next}
@@ -138,7 +138,6 @@ const Carousel: CarouselComponent = ({
           >
             {React.Children.map(children, (child, index) =>
               React.isValidElement(child) && React.cloneElement<ItemProps>(child, {
-                ready,
                 index,
                 onFocus: handleItemFocus(index)
               })
@@ -155,19 +154,15 @@ Carousel.Control = Control
 Carousel.sizes = vars.sizes
 
 interface ItemProps extends HTMLPropsFor<'li'> {
-  // TODO: move higher, use child selector, avoid clone
-  ready: boolean
-  // TODO: rm
-  index: number
   onFocus: (evt: React.FocusEvent) => void
 }
 
 // TODO: merge style prop
 export const Item: React.FC<ItemProps> = props => {
-  const { ready, style: _style, ...rest } = props
+  const { style: _style, ...rest } = props
   const context = React.useContext(CarouselContext)
   const style = { flexBasis: context.itemWidth + 'px' }
-  return <li {...styles.item(props.ready)} {...rest} style={style}></li>
+  return <li {...styles.item()} {...rest} style={style}></li>
 }
 Item.displayName = 'Carousel.Item'
 Carousel.Item = Item
