@@ -157,12 +157,11 @@ interface ItemProps extends HTMLPropsFor<'li'> {
   onFocus: (evt: React.FocusEvent) => void
 }
 
-// TODO: merge style prop
 export const Item: React.FC<ItemProps> = props => {
-  const { style: _style, ...rest } = props
+  const { style, ...rest } = props
   const context = React.useContext(CarouselContext)
-  const style = { flexBasis: context.itemWidth + 'px' }
-  return <li {...styles.item()} {...rest} style={style}></li>
+  const widthStyle = { ...style, flexBasis: context.itemWidth + 'px' }
+  return <li {...styles.item()} {...rest} style={widthStyle}></li>
 }
 Item.displayName = 'Carousel.Item'
 Carousel.Item = Item

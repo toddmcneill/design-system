@@ -195,6 +195,18 @@ export const ControlsOverride: Story = () => (
   </Container>
 )
 
+export const ItemStyleOverride: Story = () => (
+  <Container>
+    <Carousel>
+      {new Array(9).fill(null).map((_, index) => (
+        <Carousel.Item key={index} style={{fontSize: '3rem', color: 'red'}}>
+          <MockItem>item: {index + 1}</MockItem>
+        </Carousel.Item>
+      ))}
+    </Carousel>
+  </Container>
+)
+
 export const Sizes: Story = () => (
   <div>
     <Container>
