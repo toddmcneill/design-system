@@ -114,8 +114,6 @@ export default {
     display: 'flex',
     flexGrow: '1',
     flexDirection: 'row',
-    // scrollSnapType: 'x mandatory',
-    // overscrollBehaviorX: 'contain',
     transition: 'left 400ms'
   },
 
