@@ -79,17 +79,21 @@ const Carousel: CarouselComponent = ({
   )
 
   const next = () => {
-    scroll(calcStageOffsetForPageAt(
-      itemWidth,
-      Math.min(leftMostVisibleIndex + perPage, numItems - perPage)
-    ))
+    scroll(
+      calcStageOffsetForPageAt(
+        itemWidth,
+        Math.min(leftMostVisibleIndex + perPage, numItems - perPage)
+      )
+    )
   }
 
   const prev = () => {
-    scroll(calcStageOffsetForPageAt(
-      itemWidth,
-      Math.max(leftMostVisibleIndex - perPage, 0)
-    ))
+    scroll(
+      calcStageOffsetForPageAt(
+        itemWidth,
+        Math.max(leftMostVisibleIndex - perPage, 0)
+      )
+    )
   }
 
   const isPrevVisible = leftMostVisibleIndex > 0
@@ -136,10 +140,13 @@ const Carousel: CarouselComponent = ({
             onSwipeLeft={next}
             onSwipeRight={prev}
           >
-            {React.Children.map(children, (child, index) =>
-              React.isValidElement(child) && React.cloneElement<ItemProps>(child, {
-                _onFocus: handleItemFocus(index)
-              })
+            {React.Children.map(
+              children,
+              (child, index) =>
+                React.isValidElement(child) &&
+                React.cloneElement<ItemProps>(child, {
+                  _onFocus: handleItemFocus(index)
+                })
             )}
           </Track>
         </div>
@@ -161,7 +168,14 @@ export const Item: React.FC<ItemProps> = props => {
   const context = React.useContext(CarouselContext)
   const widthStyle = { ...style, flexBasis: context.itemWidth + 'px' }
   const handleFocus = combineFns(onFocus, _onFocus)
-  return <li {...styles.item()} {...rest} onFocus={handleFocus} style={widthStyle}></li>
+  return (
+    <li
+      {...styles.item()}
+      {...rest}
+      onFocus={handleFocus}
+      style={widthStyle}
+    ></li>
+  )
 }
 Item.displayName = 'Carousel.Item'
 Carousel.Item = Item
