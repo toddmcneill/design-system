@@ -16,7 +16,9 @@ import {
   calcStageOffsetBackward,
   calcStageOffsetForPageAt,
   calcStageOffsetForward,
-  calculateLeftMostVisibleIndex
+  calculateLeftMostVisibleIndex,
+  isLeftArrow,
+  isRightArrow
 } from '../js'
 import useSwipe, { UseSwipeOpts } from './use-swipe'
 import * as vars from '../vars/index'
@@ -117,13 +119,20 @@ const Carousel: CarouselComponent = ({
     stageRef.current?.scroll({ left: offset, behavior: 'smooth' })
   }
 
-  // TODO: re-add swiping; then add snapping
+  const handleTrackKeyDown = (evt: React.KeyboardEvent) => {
+    if (isLeftArrow(evt))
+      scroll(calcStageOffsetBackward(itemWidth, activeIndex - 1))
+    if (isRightArrow(evt))
+      scroll(calcStageOffsetForward(perPage, itemWidth, activeIndex + 1))
+  }
+
   return (
     <CarouselContext.Provider value={context}>
       <div {...styles.carousel()} {...rest} ref={ref}>
         {controlPrev}
         <div {...styles.stage()} ref={stageRef}>
           <Track
+            onKeyDown={handleTrackKeyDown}
             onSwipeLeft={next}
             onSwipeRight={prev}
           >
