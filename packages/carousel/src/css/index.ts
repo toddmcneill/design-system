@@ -96,7 +96,6 @@ export default {
     position: 'relative',
     display: 'flex',
     flexDirection: 'column',
-    flexDirection: 'column',
     overflowY: 'hidden',
     overflowX: 'auto',
     scrollSnapType: 'x mandatory',
@@ -124,7 +123,7 @@ export default {
     margin: `0 8px`,
     flexGrow: 0,
     flexShrink: 0,
-    scrollSnapAlign: 'start',
+    // scrollSnapAlign: 'start',
 
     '&:first-child': { marginLeft: 0 },
     '&:last-child': { marginRight: 0 }

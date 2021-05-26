@@ -74,14 +74,14 @@ const Carousel: CarouselComponent = ({
   const next = () => {
     scroll(calcStageOffsetForPageAt(
       itemWidth,
-      leftMostVisibleIndex + perPage
+      Math.min(leftMostVisibleIndex + perPage, numItems - perPage)
     ))
   }
 
   const prev = () => {
     scroll(calcStageOffsetForPageAt(
       itemWidth,
-      leftMostVisibleIndex - perPage
+      Math.max(leftMostVisibleIndex - perPage, 0)
     ))
   }
 
