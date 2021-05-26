@@ -77,7 +77,6 @@ const Carousel: CarouselComponent = ({
     stageOffset
   )
 
-  // TODO: handle left right arrows, page one item width at a time, don't change activeIndex
   const next = () => {
     scroll(calcStageOffsetForPageAt(
       itemWidth,
@@ -126,6 +125,7 @@ const Carousel: CarouselComponent = ({
       scroll(calcStageOffsetForward(perPage, itemWidth, activeIndex + 1))
   }
 
+  // TODO: _privatize internal props passing
   return (
     <CarouselContext.Provider value={context}>
       <div {...styles.carousel()} {...rest} ref={ref}>
@@ -155,11 +155,14 @@ Carousel.Control = Control
 Carousel.sizes = vars.sizes
 
 interface ItemProps extends HTMLPropsFor<'li'> {
+  // TODO: move higher, use child selector, avoid clone
   ready: boolean
+  // TODO: rm
   index: number
   onFocus: (evt: React.FocusEvent) => void
 }
 
+// TODO: merge style prop
 export const Item: React.FC<ItemProps> = props => {
   const { ready, style: _style, ...rest } = props
   const context = React.useContext(CarouselContext)
