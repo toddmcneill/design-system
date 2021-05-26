@@ -1,7 +1,5 @@
 import React from 'react'
 
-import * as vars from '../vars/index'
-
 interface CarouselContextValue {
   next: () => void
   prev: () => void
@@ -11,7 +9,10 @@ interface CarouselContextValue {
 }
 const context = React.createContext<CarouselContextValue>({
   next: () => {},
-  prev: () => {}
+  prev: () => {},
+  isPrevVisible: false,
+  isNextVisible: true,
+  itemWidth: 0
 })
 
 export default context

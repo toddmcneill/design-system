@@ -1,3 +1,5 @@
+import { ValueOf } from '@pluralsight/ps-design-system-util'
+
 import { sizes } from '../vars/index'
 import * as vars from '../vars'
 
@@ -22,17 +24,17 @@ const cardCountsPerWidth = {
 }
 
 export function calcItemsPerPage(
-  itemSize: typeof sizes,
+  itemSize: ValueOf<typeof sizes>,
   containerWidth: number
 ): number {
   const level = cardCountsPerWidth[itemSize].find(level => {
     return containerWidth >= level.min && containerWidth <= level.max
   })
-  return level.count
+  return level ? level.count : 1
 }
 
 export function calcItemWidth(
-  itemSize: typeof vars.sizes,
+  itemSize: ValueOf<typeof vars.sizes>,
   containerWidth: number
 ) {
   const perPage = calcItemsPerPage(itemSize, containerWidth)

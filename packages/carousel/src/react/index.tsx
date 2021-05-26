@@ -50,7 +50,6 @@ const Carousel: CarouselComponent = ({
   controlPrev,
   controlNext,
   size,
-  uniqueId,
   ...rest
 }) => {
   const ref = React.useRef<HTMLDivElement>(null)
@@ -73,21 +72,17 @@ const Carousel: CarouselComponent = ({
 
   // TODO: handle left right arrows, page one item width at a time, don't change activeIndex
   const next = () => {
-    const offset = calcStageOffsetForPageAt(
+    scroll(calcStageOffsetForPageAt(
       itemWidth,
       leftMostVisibleIndex + perPage
-    )
-    setStageOffset(offset)
-    stageRef.current.scroll({ left: offset, behavior: 'smooth' })
+    ))
   }
 
   const prev = () => {
-    const offset = calcStageOffsetForPageAt(
+    scroll(calcStageOffsetForPageAt(
       itemWidth,
       leftMostVisibleIndex - perPage
-    )
-    setStageOffset(offset)
-    stageRef.current.scroll({ left: offset, behavior: 'smooth' })
+    ))
   }
 
   const isPrevVisible = leftMostVisibleIndex > 0
@@ -105,15 +100,16 @@ const Carousel: CarouselComponent = ({
     if (index !== activeIndex) {
       setActiveIndex(index)
       if (index >= leftMostVisibleIndex + perPage) {
-        const offset = calcStageOffsetForward(perPage, itemWidth, index)
-        setStageOffset(offset)
-        stageRef.current.scroll({ left: offset, behavior: 'smooth' })
+        scroll(calcStageOffsetForward(perPage, itemWidth, index))
       } else if (index < leftMostVisibleIndex) {
-        const offset = calcStageOffsetBackward(itemWidth, index)
-        setStageOffset(offset)
-        stageRef.current.scroll({ left: offset, behavior: 'smooth' })
+        scroll(calcStageOffsetBackward(itemWidth, index))
       }
     }
+  }
+
+  const scroll = (offset: number) => {
+    setStageOffset(offset)
+    stageRef.current?.scroll({ left: offset, behavior: 'smooth' })
   }
 
   // TODO: re-add swiping; then add snapping
@@ -122,9 +118,12 @@ const Carousel: CarouselComponent = ({
       <div {...styles.carousel()} {...rest} ref={ref}>
         {controlPrev}
         <div {...styles.stage()} ref={stageRef}>
-          <Track>
+          <Track
+            onSwipeLeft={next}
+            onSwipeRight={prev}
+          >
             {React.Children.map(children, (child, index) =>
-              React.cloneElement(child, {
+              React.isValidElement(child) && React.cloneElement<ItemProps>(child, {
                 index,
                 onFocus: handleItemFocus(index)
               })
@@ -142,6 +141,7 @@ Carousel.sizes = vars.sizes
 
 interface ItemProps extends HTMLPropsFor<'li'> {
   index: number
+  onFocus: (evt: React.FocusEvent) => void
 }
 
 export const Item: React.FC<ItemProps> = props => {
