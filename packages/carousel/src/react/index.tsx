@@ -27,7 +27,11 @@ const styles = {
   carousel: () => glamor.css(stylesheet['.psds-carousel']),
   track: () => glamor.css(stylesheet['.psds-carousel__track']),
   stage: () => glamor.css(stylesheet['.psds-carousel__stage']),
-  item: () => glamor.css(stylesheet['.psds-carousel__item'])
+  item: (ready: boolean) =>
+    glamor.compose(
+      glamor.css(stylesheet['.psds-carousel__item']),
+      ready && glamor.css(stylesheet['.psds-carousel__item--ready'])
+    )
 }
 
 interface CarouselProps extends HTMLPropsFor<'div'> {
@@ -61,6 +65,7 @@ const Carousel: CarouselComponent = ({
   controlNext = controlNext || <Control direction={Control.directions.next} />
   size = size || Carousel.sizes.narrow
 
+  const ready = !!width && width > 0
   const stageRef = React.createRef<HTMLDivElement>()
   const perPage = calcItemsPerPage(size, width)
   const itemWidth = calcItemWidth(size, width)
@@ -124,6 +129,7 @@ const Carousel: CarouselComponent = ({
           >
             {React.Children.map(children, (child, index) =>
               React.isValidElement(child) && React.cloneElement<ItemProps>(child, {
+                ready,
                 index,
                 onFocus: handleItemFocus(index)
               })
@@ -140,14 +146,16 @@ Carousel.Control = Control
 Carousel.sizes = vars.sizes
 
 interface ItemProps extends HTMLPropsFor<'li'> {
+  ready: boolean
   index: number
   onFocus: (evt: React.FocusEvent) => void
 }
 
 export const Item: React.FC<ItemProps> = props => {
+  const { ready, style: _style, ...rest } = props
   const context = React.useContext(CarouselContext)
   const style = { flexBasis: context.itemWidth + 'px' }
-  return <li {...styles.item()} {...props} style={style}></li>
+  return <li {...styles.item(props.ready)} {...rest} style={style}></li>
 }
 Item.displayName = 'Carousel.Item'
 Carousel.Item = Item

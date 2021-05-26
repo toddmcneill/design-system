@@ -123,9 +123,13 @@ export default {
     margin: `0 8px`,
     flexGrow: 0,
     flexShrink: 0,
-    // scrollSnapAlign: 'start',
+    visibility: 'hidden',
 
     '&:first-child': { marginLeft: 0 },
     '&:last-child': { marginRight: 0 }
+  },
+  '.psds-carousel__item--ready': {
+    visibility: 'visible',
+    scrollSnapAlign: 'start',
   }
 }
