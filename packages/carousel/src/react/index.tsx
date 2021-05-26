@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-handler-names */
 import {
+  combineFns,
   HTMLPropsFor,
   ValueOf,
   useResizeObserver
@@ -125,7 +126,6 @@ const Carousel: CarouselComponent = ({
       scroll(calcStageOffsetForward(perPage, itemWidth, activeIndex + 1))
   }
 
-  // TODO: _privatize internal props passing
   return (
     <CarouselContext.Provider value={context}>
       <div {...styles.carousel()} {...rest} ref={ref}>
@@ -138,8 +138,7 @@ const Carousel: CarouselComponent = ({
           >
             {React.Children.map(children, (child, index) =>
               React.isValidElement(child) && React.cloneElement<ItemProps>(child, {
-                index,
-                onFocus: handleItemFocus(index)
+                _onFocus: handleItemFocus(index)
               })
             )}
           </Track>
@@ -154,14 +153,15 @@ Carousel.Control = Control
 Carousel.sizes = vars.sizes
 
 interface ItemProps extends HTMLPropsFor<'li'> {
-  onFocus: (evt: React.FocusEvent) => void
+  _onFocus?: (evt: React.FocusEvent) => void
 }
 
 export const Item: React.FC<ItemProps> = props => {
-  const { style, ...rest } = props
+  const { _onFocus, onFocus, style, ...rest } = props
   const context = React.useContext(CarouselContext)
   const widthStyle = { ...style, flexBasis: context.itemWidth + 'px' }
-  return <li {...styles.item()} {...rest} style={widthStyle}></li>
+  const handleFocus = combineFns(onFocus, _onFocus)
+  return <li {...styles.item()} {...rest} onFocus={handleFocus} style={widthStyle}></li>
 }
 Item.displayName = 'Carousel.Item'
 Carousel.Item = Item
